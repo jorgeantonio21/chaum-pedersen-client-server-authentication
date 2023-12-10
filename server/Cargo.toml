@@ -5,4 +5,17 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 [dependencies]
+anyhow = "1.0.75"
+axum = { version = "0.7.2", features = ["macros"] }
+num-bigint = { version = "0.4.3", features = ["rand"] }
+prost = "0.12.3"
+rand = "0.8.5"
+serde = { version = "1.0.193", features = ["derive"] }
+tonic = "0.10.2"
+
+[build-dependencies]
+dotenv = "0.15.0"
+tonic-build = "0.9"
