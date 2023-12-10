@@ -69,17 +69,17 @@ impl Auth for PedersenChaumAuthServer {
         {
             let mut state_lock = self.state.write().await;
             state_lock.create_authentication_challenge(
-                user.clone(),
-                auth_id,
+                user,
+                auth_id.clone(),
                 r1_bigint,
                 r2_bigint,
                 c.clone(),
-            );
+            )?;
         }
 
-        info!("Successfully created a new authentication challenge for user {user}");
+        info!("Successfully created a new authentication challenge for user");
         Ok(Response::new(AuthenticationChallengeResponse {
-            auth_id: user,
+            auth_id: auth_id,
             c: c.to_bytes_be().1,
         }))
     }
@@ -92,10 +92,11 @@ impl Auth for PedersenChaumAuthServer {
             "Got a new verify authentication request: {:?}",
             auth_answer_request
         );
+
         let AuthenticationAnswerRequest { auth_id, s } = auth_answer_request.into_inner();
         let s_bigint = BigInt::from_bytes_be(num_bigint::Sign::Plus, &s);
 
-        {
+        let user_name = {
             let state_read_lock = self.state.read().await;
             let challenge = state_read_lock.challenges.get(&auth_id).ok_or(Status::aborted(
                 "Failed to retrieve user challenge data, user must submit an authentication request",
@@ -117,15 +118,16 @@ impl Auth for PedersenChaumAuthServer {
                 )
                 .map_err(|e| Status::unauthenticated(e.to_string()))?;
 
-            let session_id = Uuid::new_v4().to_string();
+            user.id.clone()
+        };
 
+        let session_id = Uuid::new_v4().to_string();
+        {
             let mut state_lock = self.state.write().await;
-            state_lock.create_session(user.id.clone(), session_id);
+            state_lock.create_session(user_name, session_id.clone());
         }
 
-        let response = AuthenticationAnswerResponse {
-            session_id: String::from("TODO"),
-        };
+        let response = AuthenticationAnswerResponse { session_id };
         Ok(Response::new(response))
     }
 }

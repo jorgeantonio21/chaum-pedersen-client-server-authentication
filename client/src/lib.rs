@@ -1,4 +1,4 @@
-use num_bigint::{BigInt, BigUint};
+use num_bigint::BigInt;
 use zeroize::Zeroize;
 
 pub mod client;
@@ -13,9 +13,6 @@ pub fn calculate_password_hash<T: ToString + Zeroize>(mut password: T) -> BigInt
     // zeroize pass
     password.zeroize();
     // blake3's `Hash` bytes representation is big endian
-    let secret_bigint = BigInt::from_biguint(
-        num_bigint::Sign::Plus,
-        BigUint::from_bytes_be(secret_bytes.as_bytes()),
-    );
+    let secret_bigint = BigInt::from_bytes_be(num_bigint::Sign::Plus, secret_bytes.as_bytes());
     secret_bigint
 }

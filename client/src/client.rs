@@ -1,5 +1,6 @@
 use chaum_pedersen::chaum_pedersen::{ChaumPedersen, ChaumPedersenInterface};
-use num_bigint::{BigInt, BigUint};
+use log::info;
+use num_bigint::BigInt;
 use tonic::{async_trait, transport::Channel, Request};
 
 use crate::client_auth::{
@@ -77,17 +78,17 @@ impl AuthZKPClient for ChaumPedersenAuthClient {
         let auth_challenge_response = self
             .client
             .create_authentication_challenge(Request::new(auth_challenge_request))
-            .await?
-            .into_inner();
-        let c = BigInt::from_biguint(
-            num_bigint::Sign::Plus,
-            BigUint::from_bytes_be(&auth_challenge_response.c),
-        );
+            .await?;
+
+        info!("Successfully submited a authentication challenge request to server");
+
+        let auth_challenge = auth_challenge_response.into_inner();
+        let c = BigInt::from_bytes_be(num_bigint::Sign::Plus, &auth_challenge.c);
         let s = self.cp_zkp_protocol.solve_challenge(x, &k, &c);
         let auth_answer_response = self
             .client
             .verify_authentication(Request::new(AuthenticationAnswerRequest {
-                auth_id: auth_challenge_response.auth_id,
+                auth_id: auth_challenge.auth_id,
                 s: s.to_bytes_be().1,
             }))
             .await?

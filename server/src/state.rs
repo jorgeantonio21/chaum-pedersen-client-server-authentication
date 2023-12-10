@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use num_bigint::BigInt;
+use tonic::Status;
 
 use crate::types::{Challenge, Session, User};
 
@@ -35,27 +36,29 @@ impl PedersenChaumAuthServerState {
         r1: BigInt,
         r2: BigInt,
         c: BigInt,
-    ) {
-        if let Some(user_data) = self.users.get(&user_name) {
+    ) -> Result<(), Status> {
+        if let Some(user_data) = self.users.get_mut(&user_name) {
             if let Some(ref user_auth_id) = user_data.auth_id {
                 // if the user has already authenticated, we delete the associated challenge
                 self.challenges.remove(user_auth_id);
             }
+            user_data.auth_id = Some(auth_id.clone());
+            self.challenges.insert(
+                auth_id.clone(),
+                Challenge {
+                    id: auth_id,
+                    c,
+                    r1,
+                    r2,
+                    user_id: user_name,
+                },
+            );
+        } else {
+            return Err(Status::unauthenticated(
+                "Failed to retrieve user data, user must register first",
+            ));
         }
-
-        self.users
-            .entry(user_name.clone())
-            .and_modify(|entry| entry.auth_id = Some(auth_id.clone()));
-        self.challenges.insert(
-            auth_id.clone(),
-            Challenge {
-                id: auth_id,
-                c,
-                r1,
-                r2,
-                user_id: user_name,
-            },
-        );
+        Ok(())
     }
 
     pub(crate) fn create_session(&mut self, user_name: String, session_id: String) {
