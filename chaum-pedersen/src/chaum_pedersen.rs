@@ -7,14 +7,24 @@ use crate::{Parameters, DEFAULT_PARAMS};
 pub type RandomValue = BigInt;
 pub type Solution = BigInt;
 
-pub struct ChaumPedersenCommitment {
+pub struct ChaumPedersenExponents {
     pub(crate) r1: BigInt,
     pub(crate) r2: BigInt,
 }
 
+impl ChaumPedersenExponents {
+    pub fn get_first_exponent(&self) -> &BigInt {
+        &self.r1
+    }
+
+    pub fn get_second_exponent(&self) -> &BigInt {
+        &self.r2
+    }
+}
+
 pub trait ChaumPedersenInterface {
     fn generate_random(&self) -> RandomValue;
-    fn commit(&self, k: &BigInt) -> ChaumPedersenCommitment;
+    fn commit(&self, k: &BigInt) -> ChaumPedersenExponents;
     fn solve_challenge(&self, x: &BigInt, k: &BigInt, c: &BigInt) -> Solution;
     fn verify(
         &self,
@@ -32,6 +42,7 @@ pub struct ChaumPedersen {
 }
 
 impl ChaumPedersen {
+    #[allow(dead_code)]
     fn new(parameters: Parameters) -> Self {
         Self { parameters }
     }
@@ -60,8 +71,8 @@ impl ChaumPedersenInterface for ChaumPedersen {
         )
     }
 
-    fn commit(&self, k: &BigInt) -> ChaumPedersenCommitment {
-        ChaumPedersenCommitment {
+    fn commit(&self, k: &BigInt) -> ChaumPedersenExponents {
+        ChaumPedersenExponents {
             r1: self.parameters.g.modpow(k, &self.parameters.p),
             r2: self.parameters.h.modpow(k, &self.parameters.p),
         }
@@ -113,7 +124,7 @@ mod tests {
         let y1 = &DEFAULT_PARAMS.g.modpow(&client_secret, &DEFAULT_PARAMS.p);
         let y2 = &DEFAULT_PARAMS.h.modpow(&client_secret, &DEFAULT_PARAMS.p);
         let k = cp.generate_random();
-        let ChaumPedersenCommitment { r1, r2 } = cp.commit(&k);
+        let ChaumPedersenExponents { r1, r2 } = cp.commit(&k);
         let challenge = cp.generate_random();
         let solution = cp.solve_challenge(&client_secret, &k, &challenge);
         assert!(cp.verify(y1, y2, &r1, &r2, &solution, &challenge).is_ok());
@@ -128,7 +139,7 @@ mod tests {
         let y1 = &DEFAULT_PARAMS.g.modpow(&client_secret1, &DEFAULT_PARAMS.p);
         let y2 = &DEFAULT_PARAMS.h.modpow(&client_secret2, &DEFAULT_PARAMS.p);
         let k = cp.generate_random();
-        let ChaumPedersenCommitment { r1, r2 } = cp.commit(&k);
+        let ChaumPedersenExponents { r1, r2 } = cp.commit(&k);
         let challenge = cp.generate_random();
         let solution = cp.solve_challenge(&client_secret1, &k, &challenge);
         assert!(cp.verify(y1, y2, &r1, &r2, &solution, &challenge).is_err());

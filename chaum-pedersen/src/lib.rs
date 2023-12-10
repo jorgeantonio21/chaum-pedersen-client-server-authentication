@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 use num_bigint::BigInt;
 
-pub mod interface;
+pub mod chaum_pedersen;
 
 pub struct Parameters {
     bit_size: u64,

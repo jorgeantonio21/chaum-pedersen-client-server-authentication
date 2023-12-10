@@ -1,10 +1,10 @@
-use client::client_auth::{
-    auth_client::AuthClient, AuthenticationChallengeRequest, RegisterRequest,
+use client::{
+    calculate_password_hash,
+    client::{AuthZKPClient, ChaumPedersenAuthClient},
 };
 use log::info;
 
 use clap::{Parser, Subcommand};
-use tonic::Request;
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
@@ -41,29 +41,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
     info!("Connecting to server... ");
-    let mut client = AuthClient::connect("https://localhost:5001").await?;
+    let mut client = ChaumPedersenAuthClient::new("https://localhost:5001").await?;
 
     match cli.command {
         Commands::Register { name, password } => {
             info!("Registering user with name: {name} ...");
-            client
-                .register(Request::new(RegisterRequest {
-                    user: name,
-                    y1: 0,
-                    y2: 1,
-                }))
-                .await?;
+            let secret = calculate_password_hash(password);
+            client.register_user(&name, &secret).await?;
         }
         Commands::Login { name, password } => {
             info!("User {name} logging in ...");
-
-            client
-                .create_authentication_challenge(Request::new(AuthenticationChallengeRequest {
-                    user: name,
-                    r1: 0,
-                    r2: 1,
-                }))
-                .await?;
+            let secret = calculate_password_hash(password);
+            let session_id = client.authenticate_user(&name, &secret).await?;
+            info!("User has successfully authenticated, with session_id = {session_id}");
         }
     }
 
