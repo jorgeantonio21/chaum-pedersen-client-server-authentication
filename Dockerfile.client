@@ -9,9 +9,9 @@ RUN apt-get update \
 WORKDIR /usr/chaum-pedersen/
 
 # Copy the client code, as well as chaum-pedersen and proto dependencies
-COPY ./client/ ./client/
-COPY ./chaum-pedersen/ ./chaum-pedersen/
-COPY ./proto/ ./proto
+COPY ./client /usr/chaum-pedersen/client/
+COPY ./chaum-pedersen/ /usr/chaum-pedersen/chaum-pedersen/
+COPY ./proto/ /usr/chaum-pedersen/proto
 
 # Build the project
 RUN cd chaum-pedersen && cargo build --release && cd ..
@@ -23,4 +23,4 @@ ENV MY_NAME nillion
 ENV MY_PASSWORD is_safe_no_worries
 
 # Command to run the application
-CMD sh -c "RUST_LOG=info cargo run $COMMAND_NAME --name $MY_NAME --password $MY_PASSWORD"
+CMD sh -c "cd client && RUST_LOG=info cargo run $COMMAND_NAME --name $MY_NAME --password $MY_PASSWORD"

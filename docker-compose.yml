@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    # networks:
+    #   - app-network
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    depends_on:
+      - server
+    # networks:
+    #   - app-network
+    environment:
+      - SERVER_PORT=${SERVER_PORT}
+
+# networks:
+#   app-network:
+#     driver: bridge

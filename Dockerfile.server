@@ -1,0 +1,21 @@
+# Use the official Rust image
+FROM rust:1.73
+
+# Install protoc dependencies
+RUN apt-get update \
+    && apt-get install -y protobuf-compiler libprotobuf-dev
+
+# Create a working directory
+WORKDIR /usr/chaum-pedersen/
+
+# Copy the server code, as well as chaum-pedersen and proto dependencies
+COPY ./server /usr/chaum-pedersen/server/
+COPY ./chaum-pedersen/ /usr/chaum-pedersen/chaum-pedersen/
+COPY ./proto/ /usr/chaum-pedersen/proto
+
+# Build the project
+RUN cd chaum-pedersen && cargo build --release && cd ..
+RUN cd server && cargo build --release && cd ..
+
+# Command to run the application
+CMD sh -c "cd server && RUST_LOG=info cargo run"

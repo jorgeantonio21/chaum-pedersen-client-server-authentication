@@ -4,7 +4,7 @@ use tonic::transport::Server;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
-    let addr = "127.0.0.1:5001".parse()?;
+    let addr = "0.0.0.0:5001".parse()?;
     let service = PedersenChaumAuthServer::new();
 
     Server::builder()

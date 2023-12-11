@@ -41,7 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
 
     info!("Connecting to server... ");
-    let mut client = ChaumPedersenAuthClient::new("https://localhost:5001").await?;
+    let mut client = ChaumPedersenAuthClient::new("https://server:5001").await?;
 
     match cli.command {
         Commands::Register { name, password } => {
