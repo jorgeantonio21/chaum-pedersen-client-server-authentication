@@ -12,12 +12,12 @@ use crate::client_auth::{
 pub trait AuthZKPClient {
     async fn register_user(
         &mut self,
-        user: &String,
+        user: &str,
         x: &BigInt,
     ) -> Result<(), Box<dyn std::error::Error>>;
     async fn authenticate_user(
         &mut self,
-        user: &String,
+        user: &str,
         x: &BigInt,
     ) -> Result<String, Box<dyn std::error::Error>>;
 }
@@ -40,7 +40,7 @@ impl ChaumPedersenAuthClient {
 impl AuthZKPClient for ChaumPedersenAuthClient {
     async fn register_user(
         &mut self,
-        user: &String,
+        user: &str,
         x: &BigInt,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let exponents = self.cp_zkp_protocol.commit(x);
@@ -49,7 +49,7 @@ impl AuthZKPClient for ChaumPedersenAuthClient {
             exponents.get_second_exponent(),
         );
         let register_request = RegisterRequest {
-            user: user.clone(),
+            user: user.to_string(),
             y1: y1.to_bytes_be().1,
             y2: y2.to_bytes_be().1,
         };
@@ -60,7 +60,7 @@ impl AuthZKPClient for ChaumPedersenAuthClient {
 
     async fn authenticate_user(
         &mut self,
-        user: &String,
+        user: &str,
         x: &BigInt,
     ) -> Result<String, Box<dyn std::error::Error>> {
         let k = self.cp_zkp_protocol.generate_random();
@@ -71,7 +71,7 @@ impl AuthZKPClient for ChaumPedersenAuthClient {
         );
 
         let auth_challenge_request = AuthenticationChallengeRequest {
-            user: user.clone(),
+            user: user.to_string(),
             r1: r1.to_bytes_be().1,
             r2: r2.to_bytes_be().1,
         };
