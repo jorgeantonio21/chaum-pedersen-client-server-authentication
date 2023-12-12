@@ -13,8 +13,13 @@ use tokio::sync::RwLock;
 use tonic::{Request, Response, Status};
 use uuid::Uuid;
 
+/// Represents a server for handling authentication using the Chaum-Pedersen Zero-Knowledge Proof (ZKP) protocol.
+///
+/// This server structure contains the necessary components to manage and execute the Chaum-Pedersen protocol for user authentication. It holds an instance of the Chaum-Pedersen protocol and maintains the server's state.
 pub struct PedersenChaumAuthServer {
+    /// An instance of the `ChaumPedersen` struct
     cp_zkp_protocol: ChaumPedersen,
+    /// A thread-safe, read-write lock (`RwLock`) guarding the state of the `PedersenChaumAuthServer`
     pub(crate) state: RwLock<PedersenChaumAuthServerState>,
 }
 
@@ -35,6 +40,19 @@ impl Default for PedersenChaumAuthServer {
 
 #[tonic::async_trait]
 impl Auth for PedersenChaumAuthServer {
+    /// Handles user registration requests for the authentication server.
+    ///
+    /// This asynchronous function processes registration requests for new users.
+    /// It extracts user data from the request, converts it into the required format,
+    /// and updates the server's state with the new user's information.
+    ///
+    /// # Arguments
+    ///
+    /// * `register_request`: A `Request<RegisterRequest>` object containing the registration data.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` type that, on success, contains a `Response<RegisterResponse>`.
     async fn register(
         &self,
         register_request: Request<RegisterRequest>,
@@ -51,6 +69,17 @@ impl Auth for PedersenChaumAuthServer {
         Ok(Response::new(RegisterResponse {}))
     }
 
+    /// Creates an authentication challenge for a user.
+    ///
+    /// This asynchronous function generates a new authentication challenge as part of the Chaum-Pedersen authentication process. It processes the request, generates a random challenge, and stores the challenge information in the server's state.
+    ///
+    /// # Arguments
+    ///
+    /// * `auth_challenge_request`: A `Request<AuthenticationChallengeRequest>` object containing the challenge request data.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` type that, on success, contains a `Response<AuthenticationChallengeResponse>`. The `AuthenticationChallengeResponse` includes an authentication ID and the generated challenge. On failure, it returns a `Status` indicating the error encountered during the challenge creation process.
     async fn create_authentication_challenge(
         &self,
         auth_challenge_request: Request<AuthenticationChallengeRequest>,
@@ -84,6 +113,17 @@ impl Auth for PedersenChaumAuthServer {
         }))
     }
 
+    /// Verifies an authentication response from a user.
+    ///
+    /// This asynchronous function checks the validity of a user's response to an authentication challenge as part of the Chaum-Pedersen authentication process. It validates the response and, upon successful verification, creates a new session for the user.
+    ///
+    /// # Arguments
+    ///
+    /// * `auth_answer_request`: A `Request<AuthenticationAnswerRequest>` object containing the authentication answer data.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` type that, on success, contains a `Response<AuthenticationAnswerResponse>`.
     async fn verify_authentication(
         &self,
         auth_answer_request: Request<AuthenticationAnswerRequest>,

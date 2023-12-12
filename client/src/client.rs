@@ -8,21 +8,50 @@ use crate::client_auth::{
     RegisterRequest,
 };
 
+/// Trait definition for the asynchronous interface of a client handling authentication
+/// using Chaum-Pedersen ZK protocol.
 #[async_trait]
 pub trait AuthZKPClient {
+    /// Registers a new user in the system.
+    ///
+    /// # Arguments
+    /// * `user`: A string slice representing the username.
+    /// * `x`: A `BigInt` representing the user's secret.
+    ///
+    /// # Returns
+    /// A `Result` indicating the success or failure of the registration process.
+    ///
+    /// # Errors
+    /// Returns an error if the registration process fails.
     async fn register_user(
         &mut self,
         user: &str,
         x: &BigInt,
     ) -> Result<(), Box<dyn std::error::Error>>;
+    
+    /// Authenticates a user.
+    ///
+    /// # Arguments
+    /// * `user`: A string slice representing the username.
+    /// * `x`: A `BigInt` representing the user's secret.
+    ///
+    /// # Returns
+    /// A `Result` containing a string (e.g., a token) upon successful authentication, or an error.
+    ///
+    /// # Errors
+    /// Returns an error if the authentication process fails.
     async fn authenticate_user(
         &mut self,
         user: &str,
         x: &BigInt,
     ) -> Result<String, Box<dyn std::error::Error>>;
 }
+
+/// A client for handling user authentication using the Chaum-Pedersen ZKP protocol.
 pub struct ChaumPedersenAuthClient {
+    /// The Chaum-Pedersen protocol instance.
     cp_zkp_protocol: ChaumPedersen,
+    /// An authentication client.
     client: AuthClient<Channel>,
 }
 
@@ -85,12 +114,14 @@ impl AuthZKPClient for ChaumPedersenAuthClient {
         let auth_challenge = auth_challenge_response.into_inner();
         let c = BigInt::from_bytes_be(num_bigint::Sign::Plus, &auth_challenge.c);
         let s = self.cp_zkp_protocol.solve_challenge(x, &k, &c);
+
+        let auth_answer_request = AuthenticationAnswerRequest {
+            auth_id: auth_challenge.auth_id,
+            s: s.to_bytes_be().1,
+        };
         let auth_answer_response = self
             .client
-            .verify_authentication(Request::new(AuthenticationAnswerRequest {
-                auth_id: auth_challenge.auth_id,
-                s: s.to_bytes_be().1,
-            }))
+            .verify_authentication(Request::new(auth_answer_request))
             .await?
             .into_inner();
 

@@ -9,6 +9,11 @@ pub type UserId = String;
 pub type ChallengeId = String;
 pub type SessionId = String;
 
+/// Represents the state of a Pedersen-Chaum authentication server.
+///
+/// This struct maintains the state of the authentication server, including registered users,
+/// active challenges, and ongoing sessions. It uses hash maps for efficient retrieval and management
+/// of these entities.
 pub struct PedersenChaumAuthServerState {
     pub(crate) users: HashMap<UserId, User>,
     pub(crate) challenges: HashMap<ChallengeId, Challenge>,
@@ -23,7 +28,18 @@ impl PedersenChaumAuthServerState {
             sessions: HashMap::new(),
         }
     }
+}
 
+impl PedersenChaumAuthServerState {
+    /// Registers a new user in the server state.
+    ///
+    /// This function adds a new user to the `PedersenChaumAuthServerState`. It takes the user's name and their cryptographic components (`y1` and `y2`), and stores them as part of the user's information.
+    ///
+    /// # Arguments
+    ///
+    /// * `user_name`: A `String` representing the unique name of the user. This serves as the user's identifier.
+    /// * `y1`: A `BigInt` representing the first cryptographic component associated with the user.
+    /// * `y2`: A `BigInt` representing the second cryptographic component associated with the user.
     pub(crate) fn register_user(&mut self, user_name: String, y1: BigInt, y2: BigInt) {
         self.users.insert(
             user_name.clone(),
@@ -37,6 +53,23 @@ impl PedersenChaumAuthServerState {
         );
     }
 
+    /// Creates an authentication challenge for a registered user.
+    ///
+    /// This method adds a new challenge for a user in the `PedersenChaumAuthServerState`. It associates a user with an authentication challenge, identified by an authentication ID, and stores the challenge's cryptographic components.
+    ///
+    /// # Arguments
+    ///
+    /// * `user_name`: A `String` representing the name of the user. This should correspond to a user that is already registered in the server state.
+    /// * `auth_id`: A `String` representing a unique identifier for the authentication challenge.
+    /// * `r1`: A `BigInt` representing the first cryptographic component of the challenge.
+    /// * `r2`: A `BigInt` representing the second cryptographic component of the challenge.
+    /// * `c`: A `BigInt` representing the challenge value.
+    ///
+    /// # Returns
+    ///
+    /// Returns a `Result` type:
+    /// - `Ok(())` if the challenge was successfully created.
+    /// - `Err(Status)` if the user is not registered, with an appropriate error message.
     pub(crate) fn create_authentication_challenge(
         &mut self,
         user_name: String,
@@ -69,6 +102,20 @@ impl PedersenChaumAuthServerState {
         Ok(())
     }
 
+    /// Creates a session for a registered user.
+    ///
+    /// This method establishes a new session for a user who has successfully completed authentication. It updates the user's session information in the server state and adds a new session record.
+    ///
+    /// # Arguments
+    ///
+    /// * `user_name`: A `String` representing the name of the user. This should correspond to a user that is already registered and authenticated in the server state.
+    /// * `session_id`: A `String` representing a unique identifier for the new session.
+    ///
+    /// # Returns
+    ///
+    /// Returns a `Result` type:
+    /// - `Ok(())` if the session was successfully created.
+    /// - `Err(Status)` if the user is not registered, with an appropriate error message.
     pub(crate) fn create_session(
         &mut self,
         user_name: String,

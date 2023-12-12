@@ -1,3 +1,13 @@
+//! # Chaum-Pedersen Protocol Implementation
+//!
+//! This module provides an implementation of the Chaum-Pedersen cryptographic protocol.
+//! It includes structures and methods for generating random values, committing to values,
+//! solving challenges, and verifying the validity of responses in cryptographic operations.
+//!
+//! ## Usage
+//!
+//! To use this module, create an instance of the `ChaumPedersen` struct and utilize its methods
+//! to perform cryptographic operations as per the Chaum-Pedersen protocol.
 use anyhow::{anyhow, Result};
 use num_bigint::{BigInt, RandBigInt, ToBigInt};
 use rand::{rngs::StdRng, SeedableRng};
@@ -22,10 +32,41 @@ impl ChaumPedersenExponents {
     }
 }
 
+/// Defines the interface for the Chaum-Pedersen protocol.
 pub trait ChaumPedersenInterface {
+    /// Generates a random value for cryptographic operations.
     fn generate_random(&self) -> RandomValue;
+
+    /// Creates a commitment using a given value.
+    ///
+    /// # Arguments
+    /// * `k`: The value to commit.
+    ///
+    /// # Returns
+    /// A `ChaumPedersenExponents` instance containing the commitment exponentiation values.
     fn commit(&self, k: &BigInt) -> ChaumPedersenExponents;
+
+    /// Solves a cryptographic challenge.
+    ///
+    /// # Arguments
+    /// * `x`: A secret value.
+    /// * `k`: The committed value.
+    /// * `c`: The challenge value.
+    ///
+    /// # Returns
+    /// The solution as a `Solution` type.
     fn solve_challenge(&self, x: &BigInt, k: &BigInt, c: &BigInt) -> Solution;
+    
+    /// Verifies the validity of a cryptographic operation.
+    ///
+    /// # Arguments
+    /// * `y1`, `y2`: Committed values.
+    /// * `r1`, `r2`: Response exponents.
+    /// * `s`: The solution to the challenge.
+    /// * `c`: The challenge value.
+    ///
+    /// # Returns
+    /// A `Result` indicating success or an error message.
     fn verify(
         &self,
         y1: &BigInt,
@@ -37,7 +78,9 @@ pub trait ChaumPedersenInterface {
     ) -> Result<()>;
 }
 
+/// Main structure for the Chaum-Pedersen protocol operations.
 pub struct ChaumPedersen {
+        // Cryptographic parameters
     parameters: Parameters,
 }
 
