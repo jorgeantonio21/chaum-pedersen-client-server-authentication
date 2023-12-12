@@ -1,6 +1,6 @@
 use num_bigint::BigInt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct User {
     pub id: String,
     pub y1: BigInt,
@@ -9,7 +9,7 @@ pub struct User {
     pub session_id: Option<String>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Challenge {
     pub id: String,
     pub c: BigInt,
@@ -18,7 +18,7 @@ pub struct Challenge {
     pub user_id: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Session {
     pub id: String,
     pub user_id: String,

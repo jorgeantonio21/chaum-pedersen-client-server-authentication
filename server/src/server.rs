@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::{
     server_auth::{
         auth_server::Auth, AuthenticationAnswerRequest, AuthenticationAnswerResponse,
@@ -24,11 +22,7 @@ impl PedersenChaumAuthServer {
     pub fn new() -> Self {
         Self {
             cp_zkp_protocol: ChaumPedersen::default(),
-            state: RwLock::new(PedersenChaumAuthServerState {
-                users: HashMap::new(),
-                challenges: HashMap::new(),
-                sessions: HashMap::new(),
-            }),
+            state: RwLock::new(PedersenChaumAuthServerState::new()),
         }
     }
 }
@@ -124,7 +118,7 @@ impl Auth for PedersenChaumAuthServer {
         let session_id = Uuid::new_v4().to_string();
         {
             let mut state_lock = self.state.write().await;
-            state_lock.create_session(user_name, session_id.clone());
+            state_lock.create_session(user_name, session_id.clone())?;
         }
 
         let response = AuthenticationAnswerResponse { session_id };

@@ -80,7 +80,7 @@ impl AuthZKPClient for ChaumPedersenAuthClient {
             .create_authentication_challenge(Request::new(auth_challenge_request))
             .await?;
 
-        info!("Successfully submited a authentication challenge request to server");
+        info!("Successfully submitted a authentication challenge request to server");
 
         let auth_challenge = auth_challenge_response.into_inner();
         let c = BigInt::from_bytes_be(num_bigint::Sign::Plus, &auth_challenge.c);
