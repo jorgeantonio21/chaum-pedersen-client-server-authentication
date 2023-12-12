@@ -27,6 +27,12 @@ impl PedersenChaumAuthServer {
     }
 }
 
+impl Default for PedersenChaumAuthServer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[tonic::async_trait]
 impl Auth for PedersenChaumAuthServer {
     async fn register(
@@ -73,7 +79,7 @@ impl Auth for PedersenChaumAuthServer {
 
         info!("Successfully created a new authentication challenge for user");
         Ok(Response::new(AuthenticationChallengeResponse {
-            auth_id: auth_id,
+            auth_id,
             c: c.to_bytes_be().1,
         }))
     }

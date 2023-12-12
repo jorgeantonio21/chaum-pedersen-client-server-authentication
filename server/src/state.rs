@@ -29,8 +29,8 @@ impl PedersenChaumAuthServerState {
             user_name.clone(),
             User {
                 id: user_name,
-                y1: y1,
-                y2: y2,
+                y1,
+                y2,
                 auth_id: None,
                 session_id: None,
             },

@@ -103,7 +103,7 @@ impl ChaumPedersenInterface for ChaumPedersen {
             * y2.modpow(c, &self.parameters.p))
             % &self.parameters.p;
 
-        if !(r1 == &true_r1) || !(r2 == &true_r2) {
+        if (r1 != &true_r1) || (r2 != &true_r2) {
             return Err(anyhow!(
                 "Failed to verify challenge, invalid authentication attempt"
             ));
