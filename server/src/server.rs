@@ -15,7 +15,7 @@ use uuid::Uuid;
 
 pub struct PedersenChaumAuthServer {
     cp_zkp_protocol: ChaumPedersen,
-    state: RwLock<PedersenChaumAuthServerState>,
+    pub(crate) state: RwLock<PedersenChaumAuthServerState>,
 }
 
 impl PedersenChaumAuthServer {

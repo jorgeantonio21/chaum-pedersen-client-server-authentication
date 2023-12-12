@@ -38,10 +38,13 @@ enum Commands {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
-    let cli = Cli::parse();
+    dotenv::dotenv().expect("Failed to load .env variables");
 
-    info!("Connecting to server... ");
-    let mut client = ChaumPedersenAuthClient::new("https://server:5001").await?;
+    let cli = Cli::parse();
+    let server_addr = std::env::var("CLIENT_DEST_SERVER_ADDR").expect("Failed to retrieve `CLIENT_DEST_SERVER_ADDR` .env variable");
+
+    info!("Connecting to server at address {server_addr}... ");
+    let mut client = ChaumPedersenAuthClient::new(server_addr).await?;
 
     match cli.command {
         Commands::Register { name, password } => {
