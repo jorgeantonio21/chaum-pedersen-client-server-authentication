@@ -12,15 +12,11 @@ WORKDIR /usr/chaum-pedersen/
 COPY ./client /usr/chaum-pedersen/client/
 COPY ./chaum-pedersen/ /usr/chaum-pedersen/chaum-pedersen/
 COPY ./proto/ /usr/chaum-pedersen/proto
+COPY ./.env /usr/.env
 
 # Build the project
 RUN cd chaum-pedersen && cargo build --release && cd ..
 RUN cd client && cargo build --release && cd ..
 
-# Set default values for your variables
-ENV COMMAND_NAME register
-ENV MY_NAME nillion
-ENV MY_PASSWORD is_safe_no_worries
-
-# Command to run the application
-CMD sh -c "cd client && RUST_LOG=info cargo run $COMMAND_NAME --name $MY_NAME --password $MY_PASSWORD"
+# Keep the container running with a dummy command
+CMD ["tail", "-f", "/dev/null"]

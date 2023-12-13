@@ -12,10 +12,11 @@ WORKDIR /usr/chaum-pedersen/
 COPY ./server /usr/chaum-pedersen/server/
 COPY ./chaum-pedersen/ /usr/chaum-pedersen/chaum-pedersen/
 COPY ./proto/ /usr/chaum-pedersen/proto
+COPY ./.env /usr/.env
 
-# Build the project
+# Build the chaum-pedersen project
 RUN cd chaum-pedersen && cargo build --release && cd ..
-RUN cd server && cargo build --release && cd ..
+RUN cd server/ && cargo build --release && cd ..
 
 # Command to run the application
-CMD sh -c "cd server && RUST_LOG=info cargo run"
+CMD sh -c "cd server && RUST_LOG=info ./target/release/server"
