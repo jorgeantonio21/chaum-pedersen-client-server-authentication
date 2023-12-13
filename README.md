@@ -23,13 +23,13 @@ $ cd client
 To register a new user, execute:
 
 ```bash
-./target/release/client register --name <NAME> --password <PASSWORD>
+$ ./target/release/client register --name <NAME> --password <PASSWORD>
 ```
 
 Replace `<NAME>` and `<PASSWORD>` with the desired username and password. To authenticate with the server, run:
 
 ```bash
-./target/release/client login --name <NAME> --password <PASSWORD>
+$ ./target/release/client login --name <NAME> --password <PASSWORD>
 ```
 
 ## Project description
