@@ -1,4 +1,4 @@
-# Nillion Take-Home Assignment
+# Chaum Pedersen client/server authentication
 
 ## Instructions
 
