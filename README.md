@@ -8,10 +8,10 @@ For the best experience with this demo, we recommend using Docker. Start by sett
 $ docker-compose up --build
 ```
 
-This command initializes and starts both the client and server containers. To access the client container with a bash session, use:
+This command initializes and starts both the client and server containers. To access the client container with a bash session, execute on a new terminal window:
 
 ```bash
-$ docker exec -it <container-id> /bin/bash
+$ docker exec -it <client-container-id> /bin/bash
 ```
 
 Inside the bash session, navigate to the client directory:
@@ -63,3 +63,5 @@ We did our best to follow best practices for production environments, the implem
 
 * User secrets are never shared directly; only associated hashes are exchanged.
 * To prevent memory leaks of user passwords, the `Zeroize` crate is employed to securely erase password data from memory after use.
+* In order to be able to use 256-security prime fields, we had to change the signature of the proto files, namely we replaced
+`uint64` instances by `bytes`, assumed to be in big-endian form.

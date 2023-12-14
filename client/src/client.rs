@@ -12,11 +12,11 @@ use crate::client_auth::{
 /// using Chaum-Pedersen ZK protocol.
 #[async_trait]
 pub trait AuthZKPClient {
-    /// Registers a new user in the system.
+    /// Makes a user registration request to the server.
     ///
     /// # Arguments
     /// * `user`: A string slice representing the username.
-    /// * `x`: A `BigInt` representing the user's secret.
+    /// * `x`: A `BigInt` representing the user's secret, currently as a `Blake3` 32-byte hash (in big-endian format).
     ///
     /// # Returns
     /// A `Result` indicating the success or failure of the registration process.
@@ -28,12 +28,12 @@ pub trait AuthZKPClient {
         user: &str,
         x: &BigInt,
     ) -> Result<(), Box<dyn std::error::Error>>;
-    
+
     /// Authenticates a user.
     ///
     /// # Arguments
     /// * `user`: A string slice representing the username.
-    /// * `x`: A `BigInt` representing the user's secret.
+    /// * `x`: A `BigInt` representing the user's secret, currently as a `Blake3` 32-byte hash (in big-endian format).
     ///
     /// # Returns
     /// A `Result` containing a string (e.g., a token) upon successful authentication, or an error.

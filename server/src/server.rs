@@ -79,7 +79,9 @@ impl Auth for PedersenChaumAuthServer {
     ///
     /// # Returns
     ///
-    /// A `Result` type that, on success, contains a `Response<AuthenticationChallengeResponse>`. The `AuthenticationChallengeResponse` includes an authentication ID and the generated challenge. On failure, it returns a `Status` indicating the error encountered during the challenge creation process.
+    /// A `Result` type that, on success, contains a `Response<AuthenticationChallengeResponse>`. The `AuthenticationChallengeResponse` includes an authentication ID and the generated challenge.
+    ///
+    /// On failure, it returns a `Status` indicating the error encountered during the challenge creation process.
     async fn create_authentication_challenge(
         &self,
         auth_challenge_request: Request<AuthenticationChallengeRequest>,
@@ -124,6 +126,8 @@ impl Auth for PedersenChaumAuthServer {
     /// # Returns
     ///
     /// A `Result` type that, on success, contains a `Response<AuthenticationAnswerResponse>`.
+    ///
+    /// On failure, it returns a `Status` indicating the error encountered during the challenge creation process.
     async fn verify_authentication(
         &self,
         auth_answer_request: Request<AuthenticationAnswerRequest>,

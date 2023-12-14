@@ -56,7 +56,7 @@ pub trait ChaumPedersenInterface {
     /// # Returns
     /// The solution as a `Solution` type.
     fn solve_challenge(&self, x: &BigInt, k: &BigInt, c: &BigInt) -> Solution;
-    
+
     /// Verifies the validity of a cryptographic operation.
     ///
     /// # Arguments
@@ -80,7 +80,7 @@ pub trait ChaumPedersenInterface {
 
 /// Main structure for the Chaum-Pedersen protocol operations.
 pub struct ChaumPedersen {
-        // Cryptographic parameters
+    // Cryptographic parameters
     parameters: Parameters,
 }
 
@@ -164,8 +164,8 @@ mod tests {
         let cp = ChaumPedersen::default();
 
         let client_secret = cp.generate_random();
-        let y1 = &DEFAULT_PARAMS.g.modpow(&client_secret, &DEFAULT_PARAMS.p);
-        let y2 = &DEFAULT_PARAMS.h.modpow(&client_secret, &DEFAULT_PARAMS.p);
+        let y1 = &cp.parameters.g.modpow(&client_secret, &DEFAULT_PARAMS.p);
+        let y2 = &cp.parameters.h.modpow(&client_secret, &DEFAULT_PARAMS.p);
         let k = cp.generate_random();
         let ChaumPedersenExponents { r1, r2 } = cp.commit(&k);
         let challenge = cp.generate_random();
@@ -174,13 +174,13 @@ mod tests {
     }
 
     #[test]
-    fn test_chaum_pedersen_algorithm_in_invalid_setting() {
+    fn test_chaum_pedersen_algorithm_if_mismatched_secret() {
         let cp = ChaumPedersen::default();
 
         let client_secret1 = cp.generate_random();
         let client_secret2 = cp.generate_random();
-        let y1 = &DEFAULT_PARAMS.g.modpow(&client_secret1, &DEFAULT_PARAMS.p);
-        let y2 = &DEFAULT_PARAMS.h.modpow(&client_secret2, &DEFAULT_PARAMS.p);
+        let y1 = &cp.parameters.g.modpow(&client_secret1, &DEFAULT_PARAMS.p);
+        let y2 = &cp.parameters.h.modpow(&client_secret2, &DEFAULT_PARAMS.p);
         let k = cp.generate_random();
         let ChaumPedersenExponents { r1, r2 } = cp.commit(&k);
         let challenge = cp.generate_random();

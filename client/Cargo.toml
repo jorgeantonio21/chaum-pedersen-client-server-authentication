@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.75"
 blake3 = "1.5.0"
 chaum-pedersen = { path = "../chaum-pedersen/" }
 clap = { version = "4.4.11", features = ["derive"] }
@@ -15,7 +14,6 @@ env_logger = "0.10.1"
 log = "0.4.20"
 num-bigint = { version = "0.4.3", features = ["rand"] }
 prost = "0.12.3"
-rand = "0.8.5"
 tokio = { version = "1.35.0", features = ["macros", "rt-multi-thread"] }
 tonic = "0.10.2"
 zeroize = "1.7.0"
